@@ -1,0 +1,27 @@
+# Ignorer le répertoire Git
+.git
+.gitignore
+
+# Ignorer les fichiers d'environnement locaux (gérés par Docker Compose ou variables d'environnement du conteneur)
+.env
+
+# Ignorer les binaires compilés localement (le build se fait dans le conteneur)
+*.exe
+*.out
+main
+
+# Ignorer les répertoires de dépendances si vous les versionnez (non recommandé avec Go Modules)
+# vendor/
+
+# Ignorer les fichiers spécifiques à l'IDE ou à l'OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+Thumbs.db
+.DS_Store
+
+# Dossiers de logs ou de données temporaires
+logs/
+tmp/

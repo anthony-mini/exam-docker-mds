@@ -1,0 +1,50 @@
+
+services:
+  app:
+    build:
+      context: . # Le contexte de build est le répertoire courant (où se trouve le Dockerfile)
+      dockerfile: Dockerfile
+    container_name: go_app_service
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT_HOST}:${APP_PORT_CONTAINER}" # Mappe un port de l'hôte au port du conteneur
+    environment:
+      - APP_PORT=${APP_PORT_CONTAINER}
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_HOST=db # Le nom d'hôte du service de base de données
+      - DB_PORT=${DB_PORT_CONTAINER}
+      - DB_NAME=${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy # Attend que le service db soit sain avant de démarrer l'app
+    networks:
+      - app_network
+
+  db:
+    image: postgres:15-alpine # Utilise une image PostgreSQL officielle basée sur Alpine
+    container_name: postgres_db_service
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Volume nommé pour la persistance des données
+    ports:
+      - "${DB_PORT_HOST}:${DB_PORT_CONTAINER}" # Mappe un port de l'hôte au port du conteneur (pour accès externe si besoin)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s # Donne du temps à la DB pour démarrer avant le premier healthcheck
+    networks:
+      - app_network
+
+volumes:
+  postgres_data: # Définit un volume nommé pour la persistance des données PostgreSQL
+
+networks:
+  app_network: # Définit un réseau personnalisé pour la communication entre services
+    driver: bridge
