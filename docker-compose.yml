@@ -6,6 +6,14 @@ services:
       target: builder # On utilise l'étape 'builder' qui contient les outils Go et 'air'.
     container_name: go_app_dev
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
     ports:
       - "${APP_PORT_HOST}:${APP_PORT_CONTAINER}"
     volumes:
@@ -24,12 +32,22 @@ services:
       db:
         condition: service_healthy
     networks:
-      - app_network
+      app_network:
+        aliases:
+          - go-app
 
   db:
     image: postgres:15-alpine # Utilise une image PostgreSQL officielle basée sur Alpine
     container_name: postgres_db_service
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 512M
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -43,9 +61,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 10s # Donne du temps à la DB pour démarrer avant le premier healthcheck
+      start_period: 10s
     networks:
-      - app_network
+      app_network:
+        aliases:
+          - postgres
 
 volumes:
   postgres_data: # Définit un volume nommé pour la persistance des données PostgreSQL
