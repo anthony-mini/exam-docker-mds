@@ -25,3 +25,7 @@ Thumbs.db
 # Dossiers de logs ou de données temporaires
 logs/
 tmp/
+
+# Fichiers de configuration et de documentation non nécessaires dans l'image finale
+.air.toml
+README.md

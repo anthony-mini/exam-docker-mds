@@ -1,0 +1,18 @@
+# Binaires compilés
+main
+*.exe
+*.out
+
+# Fichiers d'environnement
+.env
+
+# Dossier temporaire de 'air'
+tmp/
+
+# Fichiers spécifiques aux IDE
+.vscode/
+.idea/
+
+# Fichiers système
+.DS_Store
+Thumbs.db
