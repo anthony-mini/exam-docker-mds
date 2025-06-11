@@ -36,18 +36,26 @@ Cette approche permet d'avoir un health check HTTP complet tout en bénéficiant
 
 - Docker et Docker Compose installés.
 
-## Lancement de l'application
+## Lancement de l'environnement de développement
 
-1. Clonez ce dépôt (si ce n'est pas déjà fait).
-2. Placez-vous à la racine du projet.
-3. Pour démarrer les conteneurs (cela construira les images lors du premier lancement si elles n'existent pas) :
-   ```bash
-   docker compose up -d
-   ```
-   Si vous avez modifié le code source (par exemple, `app.go`, `http_health_pinger.go`) ou le `Dockerfile` et que vous souhaitez forcer la reconstruction des images avant de démarrer, utilisez :
-   ```bash
-   docker compose up --build -d
-   ```
+Ce `docker-compose.yml` est configuré exclusivement pour un environnement de **développement local** avec **rechargement à chaud (hot-reload)**.
+
+Le service `app` utilise :
+- L'étape `builder` du `Dockerfile` pour avoir accès aux outils Go.
+- Un `bind mount` pour synchroniser votre code source local dans le conteneur.
+- L'outil `air` pour détecter les changements de fichiers et recompiler/redémarrer l'application automatiquement.
+
+### Commandes
+
+1.  Créez un fichier `.env` à partir de `.env.example` et ajustez les valeurs si nécessaire.
+2.  Placez-vous à la racine du projet.
+3.  Pour lancer les services, utilisez la commande suivante. L'option `--build` est recommandée pour s'assurer que l'image est à jour :
+
+```bash
+docker compose up -d --build
+```
+
+Une fois la commande exécutée, vous pouvez modifier vos fichiers `.go` et les changements seront pris en compte automatiquement dans le conteneur.
 
 ## Tester l'application
 

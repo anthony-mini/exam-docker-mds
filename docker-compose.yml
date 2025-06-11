@@ -1,23 +1,28 @@
-
 services:
   app:
     build:
-      context: . # Le contexte de build est le répertoire courant (où se trouve le Dockerfile)
+      context: .
       dockerfile: Dockerfile
-    container_name: go_app_service
+      target: builder # On utilise l'étape 'builder' qui contient les outils Go et 'air'.
+    container_name: go_app_dev
     restart: unless-stopped
     ports:
-      - "${APP_PORT_HOST}:${APP_PORT_CONTAINER}" # Mappe un port de l'hôte au port du conteneur
+      - "${APP_PORT_HOST}:${APP_PORT_CONTAINER}"
+    volumes:
+      - .:/app # Monte le code source local pour activer le hot-reload.
+    command: air # Lance 'air' pour surveiller et recompiler automatiquement le code.
     environment:
-      - APP_PORT=${APP_PORT_CONTAINER}
+      # On force la valeur de DB_HOST à 'db', le nom du service de la base de données.
+      # C'est crucial pour la communication entre conteneurs.
+      - DB_HOST=db
+      - DB_PORT=${DB_PORT_CONTAINER}
       - DB_USER=${POSTGRES_USER}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
-      - DB_HOST=db # Le nom d'hôte du service de base de données
-      - DB_PORT=${DB_PORT_CONTAINER}
       - DB_NAME=${POSTGRES_DB}
+      - APP_PORT=${APP_PORT_CONTAINER}
     depends_on:
       db:
-        condition: service_healthy # Attend que le service db soit sain avant de démarrer l'app
+        condition: service_healthy
     networks:
       - app_network
 

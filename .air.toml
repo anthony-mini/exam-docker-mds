@@ -1,0 +1,27 @@
+# Fichier de configuration pour l'outil de live-reloading 'air'.
+
+# Répertoire racine du projet à surveiller.
+root = "."
+tmp_dir = "tmp"
+
+[build]
+# Commande personnalisée pour construire l'application.
+# Crucial : Spécifie de ne compiler que 'app.go' pour éviter le conflit de 'main'.
+cmd = "go build -o ./tmp/main app.go"
+
+# Le nom du binaire final que 'air' doit exécuter.
+bin = "tmp/main"
+
+# Fichiers à inclure dans la surveillance.
+include_ext = ["go", "tpl", "tmpl", "html"]
+# Dossiers à exclure de la surveillance.
+exclude_dir = ["assets", "tmp", "vendor"]
+
+[log]
+# Affiche l'heure dans les logs pour un meilleur suivi.
+time = true
+
+[misc]
+# Délai en millisecondes avant de redémarrer après un changement.
+# Utile pour éviter les redémarrages multiples si plusieurs fichiers sont sauvegardés rapidement.
+delay = 1000 # 1s
