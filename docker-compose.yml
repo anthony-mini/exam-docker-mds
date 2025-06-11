@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: builder # On utilise l'étape 'builder' qui contient les outils Go et 'air'.
-    container_name: go_app_dev
+    container_name: go_app
     restart: unless-stopped
     deploy:
       resources:
@@ -17,11 +17,9 @@ services:
     ports:
       - "${APP_PORT_HOST}:${APP_PORT_CONTAINER}"
     volumes:
-      - .:/app # Monte le code source local pour activer le hot-reload.
-    command: air # Lance 'air' pour surveiller et recompiler automatiquement le code.
+      - .:/app
+    command: air
     environment:
-      # On force la valeur de DB_HOST à 'db', le nom du service de la base de données.
-      # C'est crucial pour la communication entre conteneurs.
       - DB_HOST=db
       - DB_PORT=${DB_PORT_CONTAINER}
       - DB_USER=${POSTGRES_USER}
@@ -37,7 +35,7 @@ services:
           - go-app
 
   db:
-    image: postgres:15-alpine # Utilise une image PostgreSQL officielle basée sur Alpine
+    image: postgres:15-alpine@sha256:d5260755faa5e967902b74b4b9bf9c6ade5c40ed9620b76a675c6bc2ec8160df
     container_name: postgres_db_service
     restart: unless-stopped
     deploy:
@@ -53,9 +51,9 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - postgres_data:/var/lib/postgresql/data # Volume nommé pour la persistance des données
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - "${DB_PORT_HOST}:${DB_PORT_CONTAINER}" # Mappe un port de l'hôte au port du conteneur (pour accès externe si besoin)
+      - "${DB_PORT_HOST}:${DB_PORT_CONTAINER}"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
@@ -71,5 +69,5 @@ volumes:
   postgres_data: # Définit un volume nommé pour la persistance des données PostgreSQL
 
 networks:
-  app_network: # Définit un réseau personnalisé pour la communication entre services
+  app_network:
     driver: bridge

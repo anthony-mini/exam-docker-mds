@@ -19,7 +19,7 @@ RUN go mod download
 
 # Installe 'air', un outil de live-reloading pour le développement Go.
 # Ceci n'affecte pas l'image de production car il est dans l'étape 'builder'.
-RUN go install github.com/air-verse/air@latest
+RUN go install github.com/air-verse/air@v1.62.0
 
 # Copie tout le reste du code source du projet (fichiers .go, etc.) dans le conteneur.
 COPY . .
